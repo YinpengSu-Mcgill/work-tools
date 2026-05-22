@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Retail Performance Tracker - Internal Demo</title>
+  <style>
+    :root {
+      --gold: #e6b94f;
+      --gold-soft: #fff3cf;
+      --cream: #f7f3eb;
+      --white: #ffffff;
+      --dark: #302a3d;
+      --dark-2: #221d2d;
+      --muted: #6f6976;
+      --line: rgba(0, 0, 0, 0.10);
+      --danger: #4a1720;
+      --green: #2f6f4e;
+      --blue: #405c91;
+      --orange: #b2652b;
+      --shadow: 0 18px 45px rgba(35, 29, 44, 0.08);
+      --radius-lg: 30px;
+      --radius-md: 20px;
+      --radius-sm: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(230, 185, 79, 0.20), transparent 32%),
+        var(--cream);
+      color: var(--dark);
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 26px 18px 34px;
+    }
+
+    .internal-warning {
+      margin-bottom: 18px;
+      padding: 17px 22px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--danger), #6b1d2b);
+      color: #fff;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: 0.04em;
+      box-shadow: 0 14px 34px rgba(74, 23, 32, 0.18);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      background: var(--gold);
+      box-shadow: var(--shadow);
+      margin-bottom: 22px;
+    }
+
+    .hero-left,
+    .hero-right {
+      padding: 34px;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+    }
+
+    .badge {
+      width: fit-content;
+      padding: 10px 15px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.48);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    h1 {
+      max-width: 560px;
+      margin: 0;
+      font-size: clamp(36px, 5vw, 62px);
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1.12;
+      letter-spacing: -0.03em;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-right {
+      display: grid;
+      align-content: center;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.45);
+    }
+
+    .hero-text {
+      margin: 0;
+      font-size: clamp(18px, 2.1vw, 25px);
+      line-height: 1.38;
+      font-weight: 750;
+    }
+
+    .hero-mini {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: white;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .top-controls {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .control-card,
+    .card {
+      border-radius: var(--radius-lg);
+      background: var(--white);
+      box-shadow: var(--shadow);
+    }
+
+    .control-card {
+      padding: 18px;
+    }
+
+    label {
+      display: grid;
+      gap: 8px;
+      color: var(--dark);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fbfaf7;
+      color: var(--dark);
+      outline: 0;
+      padding: 10px 11px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--dark);
+      box-shadow: 0 0 0 3px rgba(48, 42, 61, 0.08);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 16px 0 0;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      background: var(--dark);
+      color: #fff;
+      padding: 11px 16px;
+      font-size: 13px;
+      font-weight: 950;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      background: var(--dark-2);
+    }
+
+    button.secondary {
+      background: #eee7da;
+      color: var(--dark);
+    }
+
+    button.danger {
+      background: var(--danger);
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.04fr 0.96fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .card-inner {
+      padding: 24px;
+    }
+
+    .subtext {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .table-wrap {
+      margin-top: 18px;
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: white;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1100px;
+      border-collapse: collapse;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--dark);
+      color: #fff;
+      padding: 11px 9px;
+      font-size: 11px;
+      line-height: 1.25;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    td {
+      border-bottom: 1px solid var(--line);
+      padding: 8px;
+      background: #fff;
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    td input,
+    td select {
+      padding: 8px;
+      border-radius: 10px;
+      font-size: 13px;
+      background: #fbfaf7;
+    }
+
+    .remove-btn {
+      padding: 8px 10px;
+      background: #eee7da;
+      color: var(--danger);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .kpi {
+      padding: 17px 14px;
+      border-radius: 18px;
+      background: var(--cream);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .kpi-label {
+      min-height: 26px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+      font-weight: 950;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .kpi-value {
+      margin-top: 8px;
+      font-size: 27px;
+      line-height: 1;
+      font-weight: 950;
+      letter-spacing: -0.03em;
+    }
+
+    .kpi-note {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+      font-weight: 750;
+    }
+
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .chart-card {
+      border-radius: 24px;
+      background: var(--cream);
+      padding: 18px;
+      min-height: 340px;
+    }
+
+    .chart-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .chart-title {
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: -0.02em;
+    }
+
+    .chart-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.4;
+      margin-top: 5px;
+    }
+
+    .svg-box {
+      width: 100%;
+      height: 230px;
+      border-radius: 18px;
+      background: white;
+      overflow: hidden;
+    }
+
+    .insight-box {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 24px;
+      background: var(--dark);
+      color: #fff;
+    }
+
+    .insight-box h3 {
+      color: #fff;
+    }
+
+    .insight-list {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 8px;
+      color: rgba(255,255,255,0.82);
+      font-size: 13px;
+      line-height: 1.5;
+      font-weight: 750;
+    }
+
+    .legend {
+      display: grid;
+      gap: 7px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 850;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+    }
+
+    .footer-note {
+      margin: 18px auto 0;
+      color: #7a7480;
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1100px) {
+      .main-grid,
+      .chart-grid,
+      .top-controls {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .hero,
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-left,
+      .hero-right {
+        padding: 26px;
+      }
+
+      .internal-warning {
+        font-size: 15px;
+        line-height: 1.4;
+        padding: 15px 16px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .button-row,
+      .remove-btn {
+        display: none;
+      }
+
+      .page {
+        max-width: none;
+      }
+
+      .card,
+      .control-card,
+      .hero,
+      .internal-warning {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="internal-warning">
+      INTERNAL USE ONLY — Do not show to customers without authorization.
+    </div>
+
+    <section class="hero">
+      <div class="hero-left">
+        <div class="badge">📊 Daily performance tracker</div>
+        <h1>Retail shift performance, made visible.</h1>
+      </div>
+      <div class="hero-right">
+        <p class="hero-text">
+          Track store traffic, customer conversations, purchases, product mix, and non-purchase reasons in one internal dashboard.
+        </p>
+        <div class="hero-mini">
+          <span class="pill">No customer names</span>
+          <span class="pill">Internal coaching view</span>
+          <span class="pill">Daily summary ready</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="top-controls">
+      <div class="control-card">
+        <label>
+          Date
+          <input id="reportDate" type="date" />
+        </label>
+      </div>
+      <div class="control-card">
+        <label>
+          Sales associate
+          <input id="associateName" type="text" value="Yinpeng" />
+        </label>
+      </div>
+      <div class="control-card">
+        <label>
+          City / Area
+          <input id="cityArea" type="text" value="Montreal / Quebec" />
+        </label>
+      </div>
+      <div class="control-card">
+        <label>
+          Daily target conversations
+          <input id="targetConversations" type="number" min="0" step="1" value="30" />
+        </label>
+      </div>
+    </section>
+
+    <section class="main-grid">
+      <div class="card">
+        <div class="card-inner">
+          <h2>Excel-style shift input</h2>
+          <p class="subtext">
+            Each row can represent one time block, one store visit, or one observation period. Keep it numerical and avoid personal identifiers.
+          </p>
+
+          <div class="button-row">
+            <button id="addRowBtn" type="button">+ Add row</button>
+            <button id="loadSampleBtn" type="button" class="secondary">Load sample data</button>
+            <button id="downloadCsvBtn" type="button" class="secondary">Download CSV</button>
+            <button id="clearRowsBtn" type="button" class="danger">Clear rows</button>
+          </div>
+
+          <div class="table-wrap">
+            <table id="performanceTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Start</th>
+                  <th>End</th>
+                  <th>Store / Convenience location</th>
+                  <th>Entered customers</th>
+                  <th>Conversations</th>
+                  <th>Avg chat min</th>
+                  <th>Purchases</th>
+                  <th>Units sold</th>
+                  <th>Product purchased</th>
+                  <th>Main non-purchase reason</th>
+                  <th>Notes</th>
+                  <th>Remove</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-inner">
+          <h2>Manager-ready daily summary</h2>
+          <p class="subtext">
+            The top line should answer: How much traffic did we see, how many conversations were created, how many purchases happened, and where should we improve?
+          </p>
+
+          <div class="summary-grid">
+            <div class="kpi">
+              <div class="kpi-label">Total traffic</div>
+              <div class="kpi-value" id="totalTraffic">0</div>
+              <div class="kpi-note">All entered customers counted by time block.</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Conversations</div>
+              <div class="kpi-value" id="totalConversations">0</div>
+              <div class="kpi-note" id="conversationTargetNote">Target: 30</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Engagement rate</div>
+              <div class="kpi-value" id="engagementRate">0.0%</div>
+              <div class="kpi-note">Conversations / traffic.</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Conversion rate</div>
+              <div class="kpi-value" id="conversionRate">0.0%</div>
+              <div class="kpi-note">Purchases / conversations.</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Purchasing customers</div>
+              <div class="kpi-value" id="totalPurchases">0</div>
+              <div class="kpi-note">Count of purchase events.</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Units sold</div>
+              <div class="kpi-value" id="totalUnits">0</div>
+              <div class="kpi-note">Total product units sold.</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Avg chat duration</div>
+              <div class="kpi-value" id="avgChatDuration">0.0</div>
+              <div class="kpi-note">Minutes per conversation.</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Top barrier</div>
+              <div class="kpi-value" id="topBarrier">—</div>
+              <div class="kpi-note">Most common non-purchase reason.</div>
+            </div>
+          </div>
+
+          <div class="insight-box">
+            <h3>Coaching insights</h3>
+            <ul class="insight-list" id="insightList">
+              <li>Add shift rows to generate improvement insights.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title-row">
+          <div>
+            <div class="chart-title">Traffic → Conversation → Purchase funnel</div>
+            <div class="chart-note">Shows whether the main gap is approach volume or conversion quality.</div>
+          </div>
+        </div>
+        <svg id="funnelChart" class="svg-box" viewBox="0 0 520 230" role="img" aria-label="Funnel chart"></svg>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title-row">
+          <div>
+            <div class="chart-title">Non-purchase reasons</div>
+            <div class="chart-note">Pie chart for the biggest objections or blockers.</div>
+          </div>
+        </div>
+        <svg id="reasonPieChart" class="svg-box" viewBox="0 0 520 230" role="img" aria-label="Non-purchase reasons pie chart"></svg>
+        <div class="legend" id="reasonLegend"></div>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title-row">
+          <div>
+            <div class="chart-title">Product mix</div>
+            <div class="chart-note">Units sold by product or pack type.</div>
+          </div>
+        </div>
+        <svg id="productBarChart" class="svg-box" viewBox="0 0 520 230" role="img" aria-label="Product mix bar chart"></svg>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-title-row">
+          <div>
+            <div class="chart-title">Time-block activity</div>
+            <div class="chart-note">Compares conversations and purchases across the day.</div>
+          </div>
+        </div>
+        <svg id="timeBarChart" class="svg-box" viewBox="0 0 520 230" role="img" aria-label="Time block bar chart"></svg>
+      </div>
+    </section>
+
+    <p class="footer-note">
+      Internal estimate and coaching tool only. Do not collect customer names, phone numbers, IDs, or personal health information in this page.
+    </p>
+  </div>
+
+  <script>
+    const PRODUCT_OPTIONS = [
+      "None",
+      "TEREA Classic",
+      "TEREA Menthol",
+      "TEREA Smooth",
+      "TEREA Rich",
+      "TEREA Bundle",
+      "Device + TEREA",
+      "Other"
+    ];
+
+    const REASON_OPTIONS = [
+      "Purchased",
+      "Price concern",
+      "Needs time to think",
+      "Already has product",
+      "Prefers current brand",
+      "No device",
+      "Not interested",
+      "Age / eligibility issue",
+      "Product unavailable",
+      "Other"
+    ];
+
+    const SAMPLE_ROWS = [
+      {
+        start: "10:00",
+        end: "10:30",
+        store: "Small Convenience Store A",
+        traffic: 6,
+        conversations: 2,
+        avgMin: 3.0,
+        purchases: 0,
+        units: 0,
+        product: "None",
+        reason: "Needs time to think",
+        notes: "Quiet opening period; two short conversations."
+      },
+      {
+        start: "10:30",
+        end: "11:00",
+        store: "Small Convenience Store A",
+        traffic: 8,
+        conversations: 3,
+        avgMin: 3.5,
+        purchases: 1,
+        units: 1,
+        product: "TEREA Classic",
+        reason: "Price concern",
+        notes: "One purchase after price comparison; others asked about cost."
+      },
+      {
+        start: "11:00",
+        end: "11:30",
+        store: "Small Convenience Store A",
+        traffic: 5,
+        conversations: 2,
+        avgMin: 4.0,
+        purchases: 0,
+        units: 0,
+        product: "None",
+        reason: "No device",
+        notes: "Main question was whether a device is needed."
+      },
+      {
+        start: "11:30",
+        end: "12:00",
+        store: "Small Convenience Store A",
+        traffic: 10,
+        conversations: 4,
+        avgMin: 3.2,
+        purchases: 1,
+        units: 2,
+        product: "TEREA Menthol",
+        reason: "Prefers current brand",
+        notes: "Slightly better traffic before lunch."
+      },
+      {
+        start: "12:00",
+        end: "12:30",
+        store: "Small Convenience Store A",
+        traffic: 9,
+        conversations: 3,
+        avgMin: 2.8,
+        purchases: 1,
+        units: 1,
+        product: "TEREA Smooth",
+        reason: "Not interested",
+        notes: "Fast conversations; one quick purchase."
+      },
+      {
+        start: "12:30",
+        end: "13:00",
+        store: "Small Convenience Store A",
+        traffic: 7,
+        conversations: 2,
+        avgMin: 4.5,
+        purchases: 0,
+        units: 0,
+        product: "None",
+        reason: "Needs time to think",
+        notes: "Customer asked for information but did not buy today."
+      }
+    ];
+
+    const COLORS = ["#e6b94f", "#302a3d", "#405c91", "#2f6f4e", "#b2652b", "#8d4f6a", "#6f6976", "#c98d3f"];
+
+    const tableBody = document.getElementById("tableBody");
+    const reportDate = document.getElementById("reportDate");
+    const targetConversations = document.getElementById("targetConversations");
+
+    function setToday() {
+      const today = new Date();
+      reportDate.value = today.toISOString().slice(0, 10);
+    }
+
+    function number(value, min = 0) {
+      const n = Number(value);
+      if (!Number.isFinite(n)) return min;
+      return Math.max(n, min);
+    }
+
+    function pct(value) {
+      return (Number(value || 0)).toLocaleString("en-CA", {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      }) + "%";
+    }
+
+    function one(value) {
+      return Number(value || 0).toLocaleString("en-CA", {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1
+      });
+    }
+
+    function createOptions(options, selectedValue) {
+      return options.map(option => `<option value="${escapeHtml(option)}" ${option === selectedValue ? "selected" : ""}>${escapeHtml(option)}</option>`).join("");
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function addRow(data = {}) {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td class="row-number"></td>
+        <td><input class="start" type="time" value="${escapeHtml(data.start || "")}" /></td>
+        <td><input class="end" type="time" value="${escapeHtml(data.end || "")}" /></td>
+        <td><input class="store" type="text" value="${escapeHtml(data.store || "")}" placeholder="Store name" /></td>
+        <td><input class="traffic" type="number" min="0" step="1" value="${escapeHtml(data.traffic ?? 0)}" /></td>
+        <td><input class="conversations" type="number" min="0" step="1" value="${escapeHtml(data.conversations ?? 0)}" /></td>
+        <td><input class="avgMin" type="number" min="0" step="0.1" value="${escapeHtml(data.avgMin ?? 0)}" /></td>
+        <td><input class="purchases" type="number" min="0" step="1" value="${escapeHtml(data.purchases ?? 0)}" /></td>
+        <td><input class="units" type="number" min="0" step="1" value="${escapeHtml(data.units ?? 0)}" /></td>
+        <td><select class="product">${createOptions(PRODUCT_OPTIONS, data.product || "None")}</select></td>
+        <td><select class="reason">${createOptions(REASON_OPTIONS, data.reason || "Not interested")}</select></td>
+        <td><input class="notes" type="text" value="${escapeHtml(data.notes || "")}" placeholder="Short note" /></td>
+        <td><button type="button" class="remove-btn">Remove</button></td>
+      `;
+
+      row.querySelectorAll("input, select").forEach(input => {
+        input.addEventListener("input", updateDashboard);
+        input.addEventListener("change", updateDashboard);
+      });
+
+      row.querySelector(".remove-btn").addEventListener("click", () => {
+        row.remove();
+        refreshRowNumbers();
+        updateDashboard();
+      });
+
+      tableBody.appendChild(row);
+      refreshRowNumbers();
+      updateDashboard();
+    }
+
+    function refreshRowNumbers() {
+      Array.from(tableBody.querySelectorAll("tr")).forEach((row, index) => {
+        row.querySelector(".row-number").textContent = index + 1;
+      });
+    }
+
+    function getRows() {
+      return Array.from(tableBody.querySelectorAll("tr")).map(row => ({
+        start: row.querySelector(".start").value,
+        end: row.querySelector(".end").value,
+        store: row.querySelector(".store").value,
+        traffic: number(row.querySelector(".traffic").value),
+        conversations: number(row.querySelector(".conversations").value),
+        avgMin: number(row.querySelector(".avgMin").value),
+        purchases: number(row.querySelector(".purchases").value),
+        units: number(row.querySelector(".units").value),
+        product: row.querySelector(".product").value,
+        reason: row.querySelector(".reason").value,
+        notes: row.querySelector(".notes").value
+      }));
+    }
+
+    function sum(rows, key) {
+      return rows.reduce((total, row) => total + number(row[key]), 0);
+    }
+
+    function groupBy(rows, key, valueKey = null, filterFn = null) {
+      const result = {};
+      rows.forEach(row => {
+        if (filterFn && !filterFn(row)) return;
+        const label = row[key] || "Unknown";
+        const value = valueKey ? number(row[valueKey]) : 1;
+        result[label] = (result[label] || 0) + value;
+      });
+      return result;
+    }
+
+    function updateDashboard() {
+      const rows = getRows();
+      const totalTraffic = sum(rows, "traffic");
+      const totalConversations = sum(rows, "conversations");
+      const totalPurchases = sum(rows, "purchases");
+      const totalUnits = sum(rows, "units");
+      const weightedChatMinutes = rows.reduce((total, row) => total + number(row.avgMin) * number(row.conversations), 0);
+      const avgChat = totalConversations > 0 ? weightedChatMinutes / totalConversations : 0;
+      const engagementRate = totalTraffic > 0 ? totalConversations / totalTraffic * 100 : 0;
+      const conversionRate = totalConversations > 0 ? totalPurchases / totalConversations * 100 : 0;
+      const target = number(targetConversations.value);
+      const targetProgress = target > 0 ? totalConversations / target * 100 : 0;
+
+      const reasonGroups = groupBy(rows, "reason", "conversations", row => row.reason && row.reason !== "Purchased");
+      const productGroups = groupBy(rows, "product", "units", row => row.product && row.product !== "None" && number(row.units) > 0);
+      const topBarrier = getTopKey(reasonGroups) || "—";
+
+      document.getElementById("totalTraffic").textContent = totalTraffic.toLocaleString("en-CA");
+      document.getElementById("totalConversations").textContent = totalConversations.toLocaleString("en-CA");
+      document.getElementById("engagementRate").textContent = pct(engagementRate);
+      document.getElementById("conversionRate").textContent = pct(conversionRate);
+      document.getElementById("totalPurchases").textContent = totalPurchases.toLocaleString("en-CA");
+      document.getElementById("totalUnits").textContent = totalUnits.toLocaleString("en-CA");
+      document.getElementById("avgChatDuration").textContent = one(avgChat);
+      document.getElementById("topBarrier").textContent = topBarrier;
+      document.getElementById("conversationTargetNote").textContent = `Target: ${target.toLocaleString("en-CA")} | Progress: ${pct(targetProgress)}`;
+
+      drawFunnelChart(totalTraffic, totalConversations, totalPurchases);
+      drawPieChart(reasonGroups);
+      drawProductBarChart(productGroups);
+      drawTimeBarChart(rows);
+      updateInsights({ totalTraffic, totalConversations, totalPurchases, totalUnits, engagementRate, conversionRate, target, targetProgress, topBarrier, avgChat });
+    }
+
+    function getTopKey(groups) {
+      return Object.entries(groups).sort((a, b) => b[1] - a[1])[0]?.[0];
+    }
+
+    function svgText(x, y, text, size = 13, weight = 800, fill = "#302a3d", anchor = "start") {
+      return `<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" font-weight="${weight}" text-anchor="${anchor}" font-family="Arial, Helvetica, sans-serif">${escapeHtml(text)}</text>`;
+    }
+
+    function drawFunnelChart(traffic, conversations, purchases) {
+      const svg = document.getElementById("funnelChart");
+      const values = [
+        { label: "Traffic", value: traffic, color: "#e6b94f" },
+        { label: "Conversations", value: conversations, color: "#405c91" },
+        { label: "Purchases", value: purchases, color: "#2f6f4e" }
+      ];
+      const max = Math.max(...values.map(v => v.value), 1);
+      let content = `<rect width="520" height="230" fill="#fff"/>`;
+      values.forEach((item, index) => {
+        const barWidth = Math.max(item.value / max * 390, 4);
+        const y = 38 + index * 58;
+        content += `<rect x="112" y="${y}" width="${barWidth}" height="32" rx="14" fill="${item.color}" opacity="0.92"/>`;
+        content += svgText(24, y + 21, item.label, 13, 900, "#6f6976");
+        content += svgText(112 + barWidth + 10, y + 21, String(item.value), 14, 950, "#302a3d");
+      });
+      const convRate = traffic > 0 ? conversations / traffic * 100 : 0;
+      const purchaseRate = conversations > 0 ? purchases / conversations * 100 : 0;
+      content += svgText(260, 205, `Engagement: ${pct(convRate)}  |  Conversion: ${pct(purchaseRate)}`, 13, 900, "#6f6976", "middle");
+      svg.innerHTML = content;
+    }
+
+    function drawPieChart(groups) {
+      const svg = document.getElementById("reasonPieChart");
+      const legend = document.getElementById("reasonLegend");
+      const entries = Object.entries(groups).filter(([, value]) => value > 0).sort((a, b) => b[1] - a[1]);
+      const total = entries.reduce((sum, [, value]) => sum + value, 0);
+      let content = `<rect width="520" height="230" fill="#fff"/>`;
+
+      if (total === 0) {
+        content += svgText(260, 115, "No non-purchase reason data yet", 15, 900, "#6f6976", "middle");
+        svg.innerHTML = content;
+        legend.innerHTML = "";
+        return;
+      }
+
+      let startAngle = -90;
+      const cx = 260, cy = 105, r = 76;
+      entries.forEach(([label, value], index) => {
+        const angle = value / total * 360;
+        const endAngle = startAngle + angle;
+        content += pieSlice(cx, cy, r, startAngle, endAngle, COLORS[index % COLORS.length]);
+        startAngle = endAngle;
+      });
+
+      content += `<circle cx="${cx}" cy="${cy}" r="42" fill="#fff"/>`;
+      content += svgText(cx, cy - 4, String(total), 22, 950, "#302a3d", "middle");
+      content += svgText(cx, cy + 18, "reason count", 11, 850, "#6f6976", "middle");
+      svg.innerHTML = content;
+
+      legend.innerHTML = entries.map(([label, value], index) => {
+        const share = total > 0 ? value / total * 100 : 0;
+        return `<div class="legend-item"><span class="dot" style="background:${COLORS[index % COLORS.length]}"></span>${escapeHtml(label)} — ${value} (${pct(share)})</div>`;
+      }).join("");
+    }
+
+    function pieSlice(cx, cy, r, startAngle, endAngle, color) {
+      const start = polarToCartesian(cx, cy, r, endAngle);
+      const end = polarToCartesian(cx, cy, r, startAngle);
+      const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+      return `<path d="M ${cx} ${cy} L ${start.x} ${start.y} A ${r} ${r} 0 ${largeArcFlag} 0 ${end.x} ${end.y} Z" fill="${color}" opacity="0.94"/>`;
+    }
+
+    function polarToCartesian(cx, cy, r, angleInDegrees) {
+      const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+      return {
+        x: cx + (r * Math.cos(angleInRadians)),
+        y: cy + (r * Math.sin(angleInRadians))
+      };
+    }
+
+    function drawProductBarChart(groups) {
+      const svg = document.getElementById("productBarChart");
+      const entries = Object.entries(groups).filter(([, value]) => value > 0).sort((a, b) => b[1] - a[1]).slice(0, 6);
+      let content = `<rect width="520" height="230" fill="#fff"/>`;
+
+      if (entries.length === 0) {
+        content += svgText(260, 115, "No product sales data yet", 15, 900, "#6f6976", "middle");
+        svg.innerHTML = content;
+        return;
+      }
+
+      const max = Math.max(...entries.map(([, value]) => value), 1);
+      entries.forEach(([label, value], index) => {
+        const y = 28 + index * 31;
+        const width = Math.max(value / max * 305, 4);
+        content += svgText(22, y + 19, label.length > 18 ? label.slice(0, 18) + "…" : label, 12, 900, "#6f6976");
+        content += `<rect x="178" y="${y}" width="${width}" height="20" rx="10" fill="${COLORS[index % COLORS.length]}"/>`;
+        content += svgText(178 + width + 8, y + 15, String(value), 12, 950, "#302a3d");
+      });
+      svg.innerHTML = content;
+    }
+
+    function drawTimeBarChart(rows) {
+      const svg = document.getElementById("timeBarChart");
+      const usableRows = rows.filter(row => row.start || row.store).slice(0, 8);
+      let content = `<rect width="520" height="230" fill="#fff"/>`;
+
+      if (usableRows.length === 0) {
+        content += svgText(260, 115, "No time-block data yet", 15, 900, "#6f6976", "middle");
+        svg.innerHTML = content;
+        return;
+      }
+
+      const max = Math.max(...usableRows.flatMap(row => [row.conversations, row.purchases]), 1);
+      const chartLeft = 44;
+      const chartBottom = 185;
+      const groupWidth = 54;
+      const barWidth = 17;
+
+      content += `<line x1="34" y1="${chartBottom}" x2="500" y2="${chartBottom}" stroke="#ddd6ca" stroke-width="1"/>`;
+      usableRows.forEach((row, index) => {
+        const x = chartLeft + index * groupWidth;
+        const convHeight = row.conversations / max * 130;
+        const purchaseHeight = row.purchases / max * 130;
+        content += `<rect x="${x}" y="${chartBottom - convHeight}" width="${barWidth}" height="${convHeight}" rx="6" fill="#405c91"/>`;
+        content += `<rect x="${x + barWidth + 4}" y="${chartBottom - purchaseHeight}" width="${barWidth}" height="${purchaseHeight}" rx="6" fill="#2f6f4e"/>`;
+        const label = row.start || String(index + 1);
+        content += svgText(x + 18, 207, label, 10, 850, "#6f6976", "middle");
+      });
+      content += `<circle cx="360" cy="22" r="5" fill="#405c91"/>${svgText(371, 26, "Conversations", 11, 850, "#6f6976")}`;
+      content += `<circle cx="360" cy="42" r="5" fill="#2f6f4e"/>${svgText(371, 46, "Purchases", 11, 850, "#6f6976")}`;
+      svg.innerHTML = content;
+    }
+
+    function updateInsights(data) {
+      const insights = [];
+      if (data.totalTraffic === 0) {
+        insights.push("Add shift rows to generate improvement insights.");
+      } else {
+        if (data.engagementRate < 20) {
+          insights.push("Engagement rate is below 20%; the main improvement area is likely approach volume or positioning in the store.");
+        } else {
+          insights.push("Engagement rate is active; maintain approach consistency and focus on qualified conversations.");
+        }
+
+        if (data.conversionRate < 10 && data.totalConversations >= 10) {
+          insights.push("Conversion rate is below 10%; review objections, product explanation flow, and closing questions.");
+        } else if (data.totalConversations > 0) {
+          insights.push("Conversion rate is within a usable range for coaching; compare by store and time block to find best moments.");
+        }
+
+        if (data.target > 0 && data.totalConversations < data.target) {
+          insights.push(`Conversation target gap: ${data.target - data.totalConversations} more conversation(s) needed to reach today's target.`);
+        } else if (data.target > 0) {
+          insights.push("Conversation target reached or exceeded; use the product mix and barrier charts for next-level optimization.");
+        }
+
+        if (data.topBarrier && data.topBarrier !== "—") {
+          insights.push(`Top non-purchase barrier: ${data.topBarrier}. Prepare one short response or supporting explanation for this barrier.`);
+        }
+
+        if (data.avgChat > 5 && data.conversionRate < 10) {
+          insights.push("Average chat duration is relatively long while conversion is low; consider making the explanation shorter and moving earlier to qualifying questions.");
+        }
+      }
+
+      document.getElementById("insightList").innerHTML = insights.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+    }
+
+    function downloadCsv() {
+      const rows = getRows();
+      const headers = ["Date", "Associate", "Area", "Start", "End", "Store", "Entered customers", "Conversations", "Avg chat min", "Purchases", "Units sold", "Product", "Reason", "Notes"];
+      const reportInfo = {
+        date: reportDate.value,
+        associate: document.getElementById("associateName").value,
+        area: document.getElementById("cityArea").value
+      };
+
+      const csvRows = [headers];
+      rows.forEach(row => {
+        csvRows.push([
+          reportInfo.date,
+          reportInfo.associate,
+          reportInfo.area,
+          row.start,
+          row.end,
+          row.store,
+          row.traffic,
+          row.conversations,
+          row.avgMin,
+          row.purchases,
+          row.units,
+          row.product,
+          row.reason,
+          row.notes
+        ]);
+      });
+
+      const csv = csvRows.map(row => row.map(cell => `"${String(cell ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `daily-performance-${reportInfo.date || "report"}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById("addRowBtn").addEventListener("click", () => addRow());
+    document.getElementById("loadSampleBtn").addEventListener("click", () => {
+      tableBody.innerHTML = "";
+      SAMPLE_ROWS.forEach(row => addRow(row));
+    });
+    document.getElementById("clearRowsBtn").addEventListener("click", () => {
+      tableBody.innerHTML = "";
+      addRow();
+    });
+    document.getElementById("downloadCsvBtn").addEventListener("click", downloadCsv);
+    targetConversations.addEventListener("input", updateDashboard);
+    targetConversations.addEventListener("change", updateDashboard);
+
+    setToday();
+    SAMPLE_ROWS.forEach(row => addRow(row));
+  </script>
+</body>
+</html>
